@@ -7,6 +7,7 @@ use std::sync::LazyLock;
 
 use bevy_asset::{AssetPlugin, AssetServer};
 use bevy_image::{CompressedImageFormats, ImageLoader};
+#[cfg(feature = "logs")]
 use bevy_log::LogPlugin;
 use bevy_platform::collections::HashMap;
 #[cfg(feature = "ui")]
@@ -59,6 +60,7 @@ fn initialize_app_with_font(font_path: impl AsRef<Utf8Path>) -> (App, Handle<Ima
         bevy_time::TimePlugin,
         bevy_app::ScheduleRunnerPlugin::default(),
         AssetPlugin::default(),
+        #[cfg(feature = "logs")]
         LogPlugin::default(),
     ));
     app.add_plugins(ImageFontPlugin);

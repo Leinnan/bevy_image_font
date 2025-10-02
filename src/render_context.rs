@@ -114,7 +114,9 @@ impl<'assets> RenderContext<'assets> {
 
         let atlas_layouts = match atlas_layouts {
             Ok(layout) => layout,
+            #[cfg_attr(not(feature = "logs"), allow(unused_variables))]
             Err(error) => {
+                #[cfg(feature = "logs")]
                 bevy_log::error!("{error}");
                 return None;
             }

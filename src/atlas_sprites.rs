@@ -111,6 +111,7 @@ pub struct ImageFontSpriteText {
 /// This is used to manage text rendering at the entity level.
 #[derive(Debug, Clone, Component)]
 struct ImageFontTextData {
+    #[cfg_attr(not(feature = "logs"), allow(unused))]
     /// The entity that owns this `ImageFontTextData` component.
     self_entity: Entity,
 
@@ -217,15 +218,19 @@ pub fn set_up_sprites(
         let font_handle = &image_font_text.font;
         let Some(image_font) = image_fonts.get(font_handle) else {
             if !image_font_text_data.has_reported_missing_font {
-                let font_handle_detail: &dyn Debug = if let Some(font_path) = font_handle.path() {
-                    font_path
-                } else {
-                    &font_handle.id()
-                };
-                bevy_log::error!(
-                    "ImageFont asset {font_handle_detail:?} is not loaded; can't render text for entity: {}",
-                    image_font_text_data.self_entity
-                );
+                #[cfg(feature = "logs")]
+                {
+                    let font_handle_detail: &dyn Debug = if let Some(font_path) = font_handle.path()
+                    {
+                        font_path
+                    } else {
+                        &font_handle.id()
+                    };
+                    bevy_log::error!(
+                        "ImageFont asset {font_handle_detail:?} is not loaded; can't render text for entity: {}",
+                        image_font_text_data.self_entity
+                    );
+                }
                 image_font_text_data.has_reported_missing_font = true;
             }
             continue;
@@ -294,6 +299,7 @@ fn maybe_insert_new_image_font_text_data(
     maybe_new_image_font_text_data: Option<ImageFontTextData>,
 ) {
     if let Some(new_image_font_text_data) = maybe_new_image_font_text_data {
+        #[cfg(feature = "logs")]
         bevy_log::debug!("Inserted new ImageFontTextData for entity {:?}", entity);
         commands.entity(entity).insert(new_image_font_text_data);
     }
@@ -334,7 +340,9 @@ fn update_existing_sprites(
     {
         let (mut sprite, mut transform) = match child_query.get_mut(sprite_entity) {
             Ok(result) => result,
+            #[cfg_attr(not(feature = "logs"), allow(unused_variables))]
             Err(error) => {
+                #[cfg(feature = "logs")]
                 bevy_log::error!(
                     "An ImageFontSpriteText unexpectedly failed: {error}. This will likely cause rendering bugs."
                 );
@@ -344,6 +352,7 @@ fn update_existing_sprites(
 
         let sprite = &mut *sprite;
         let Some(sprite_texture) = sprite.texture_atlas.as_mut() else {
+            #[cfg(feature = "logs")]
             bevy_log::error!(
                 "An ImageFontSpriteText's child sprite was \
             unexpectedly missing a `texture_atlas`. This will likely cause rendering bugs."

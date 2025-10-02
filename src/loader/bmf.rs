@@ -13,7 +13,6 @@
 use bevy_asset::{AssetLoader, LoadContext, io::Reader};
 use bevy_image::Image;
 use bevy_image::TextureAtlasLayout;
-use bevy_log::warn;
 use bevy_math::Vec2;
 use bevy_math::{URect, UVec2};
 use bevy_platform::collections::HashMap;
@@ -244,7 +243,8 @@ fn process_bmf_characters(
         if let Some(character) = char::from_u32(char.id) {
             atlas_character_map.insert(character, (char, rect, None));
         } else {
-            warn!(
+            #[cfg(feature = "logs")]
+            bevy_log::warn!(
                 "Skipping invalid character id {}. Full char definition: {char:?} ",
                 char.id
             );
@@ -328,7 +328,8 @@ fn construct_image_font(
                         if let Some(character) = char::from_u32(kerning.second) {
                             Some((character, f32::from(kerning.amount)))
                         } else {
-                            warn!(
+                            #[cfg(feature = "logs")]
+                            bevy_log::warn!(
                                 "Skipping invalid character id {} in kerning data.",
                                 kerning.second
                             );

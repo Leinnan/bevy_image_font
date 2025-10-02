@@ -166,12 +166,15 @@ fn render_text_to_image_holder<'borrow>(
     layouts: &Assets<TextureAtlasLayout>,
 ) {
     for (image_font_text, image_handle_holder) in font_text_to_image_iter {
+        #[cfg(feature = "logs")]
         bevy_log::debug!("Rendering [{}]", image_font_text.text);
         match render_text_to_image(image_font_text, image_fonts, images, layouts) {
             Ok(image) => {
                 image_handle_holder.set_image_handle(images.add(image));
             }
+            #[cfg_attr(not(feature = "logs"), allow(unused_variables))]
             Err(error) => {
+                #[cfg(feature = "logs")]
                 bevy_log::error!(
                     "Error when rendering image font text {:?}: {}",
                     image_font_text,

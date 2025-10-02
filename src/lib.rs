@@ -321,6 +321,7 @@ pub fn sync_texts_with_font_changes(
 
     // Extract relevant IDs from events
     for id in events.read().filter_map(extract_asset_id) {
+        #[cfg(feature = "logs")]
         bevy_log::info!("Image font {id} finished loading; marking as dirty");
         changed_fonts.insert(id);
     }
